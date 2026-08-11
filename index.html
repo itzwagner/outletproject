@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETERNA | Global Luxury Outlet</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="header">
+        <div class="logo">AETERNA</div>
+        <nav class="nav-main">
+            <button class="nav-btn active" onclick="selectGender('men')">MEN</button>
+            <button class="nav-btn" onclick="selectGender('women')">WOMEN</button>
+        </nav>
+        <div class="user-actions">
+            <a href="#" class="icon-link"><i class="fa-regular fa-user"></i> Login</a>
+            <button class="cart-btn" onclick="toggleCart()">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span id="cart-count">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN BANNER -->
+    <section class="hero">
+        <div class="hero-content">
+            <span id="hero-subtitle">MENSWEAR COLLECTION</span>
+            <h1 id="hero-title">Exclusive Global Brands</h1>
+            <p>Premium imported selection with outlet pricing.</p>
+        </div>
+    </section>
+
+    <!-- SUBCATEGORIES NAV -->
+    <section class="subcategory-bar">
+        <div class="sub-container" id="sub-nav">
+            <!-- Dynamically populated based on Men / Women -->
+        </div>
+    </section>
+
+    <!-- PRODUCT CATALOG -->
+    <main class="main-container">
+        <div class="catalog-header">
+            <h2 id="catalog-title">All Products</h2>
+        </div>
+        <div class="products-grid" id="products-grid">
+            <!-- Products loaded dynamically -->
+        </div>
+    </main>
+
+    <!-- PRODUCT MODAL -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>Shopping Bag</h3>
+            <span class="close-cart" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <p class="empty-cart-msg">Your bag is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total-price">$ 0.00</span>
+            </div>
+            <button class="btn-primary btn-block" onclick="checkout()">Checkout</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2026 AETERNA Global Outlet. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
