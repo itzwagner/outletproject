@@ -228,7 +228,6 @@ function openModal(id) {
   currentModalImageIndex = 0;
   const fallbackImg = "https://images.unsplash.com/photo-1560769629-975ec94e6a86?auto=format&fit=crop&w=600&q=80";
 
-  // Get related products (same category, different id)
   const related = PRODUCTS.filter(p => p.gender === product.gender && p.category === product.category && p.id !== product.id).slice(0, 3);
 
   document.getElementById('modal-body').innerHTML = `
@@ -317,7 +316,7 @@ async function calcCartShipping() {
     const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
     const data = await res.json();
     if (!data.erro) {
-      shippingCost = 15.00; // Flat standard delivery for demo
+      shippingCost = 15.00;
       document.getElementById('shipping-result').innerHTML = `<span style="color: #27ae60;">Delivery to ${data.localidade}/${data.uf}: $15.00</span>`;
     } else {
       shippingCost = 25.00;
