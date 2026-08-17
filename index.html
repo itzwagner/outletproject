@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETERNA | Outlet Global de Luxo</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">AETERNA</div>
+        <nav class="nav-main">
+            <button class="nav-btn active" onclick="selectGender('masculino', this)">MASCULINO</button>
+            <button class="nav-btn" onclick="selectGender('feminino', this)">FEMININO</button>
+        </nav>
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" placeholder="Buscar produtos..." oninput="handleSearch(event)">
+        </div>
+        <div class="user-actions">
+            <a href="#" class="icon-link" id="login-link" onclick="openAuthModal('login'); return false;">
+                <i class="fa-regular fa-user"></i> Entrar
+            </a>
+            <div class="user-menu" id="user-menu-wrap" style="display:none;">
+                <button class="user-menu-trigger" onclick="toggleAccountMenu()">
+                    <img id="nav-avatar" src="https://placehold.co/100x100/eeeeee/111111?text=U" alt="User" class="nav-avatar-img">
+                    <span id="user-name">Usuário</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="account-dropdown" id="account-menu">
+                    <button onclick="openAccountPanel('profile')"><i class="fa-solid fa-gear"></i> Minha Conta</button>
+                    <button onclick="openAccountPanel('orders')"><i class="fa-solid fa-box"></i> Minhas Compras</button>
+                    <button onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Sair</button>
+                </div>
+            </div>
+            <button class="cart-btn" onclick="toggleCart()">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span id="cart-count">0</span>
+            </button>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <span id="hero-subtitle">COLEÇÃO MASCULINA</span>
+            <h1 id="hero-title">Marcas Globais Exclusivas</h1>
+            <p>Seleção premium importada com preços de outlet.</p>
+        </div>
+    </section>
+
+    <section class="subcategory-bar">
+        <div class="sub-container" id="category-nav"></div>
+    </section>
+
+    <section class="subcategory-bar subcategory-bar-secondary">
+        <div class="sub-container" id="sub-nav"></div>
+    </section>
+
+    <main class="main-container">
+        <div class="catalog-header">
+            <div>
+                <h2 id="catalog-title">Todos os Produtos</h2>
+                <span class="product-count" id="product-count"></span>
+            </div>
+        </div>
+        <div class="products-grid" id="products-grid"></div>
+    </main>
+
+    <!-- Modal do Produto -->
+    <div class="modal" id="product-modal" onclick="if(event.target===this)closeModal()">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Modal de Autenticação -->
+    <div class="modal" id="auth-modal" onclick="if(event.target===this)closeAuthModal()">
+        <div class="modal-content auth-modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <h2 class="auth-title">Bem-vindo à AETERNA</h2>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">Entrar</button>
+                <button class="auth-tab" data-tab="register" onclick="switchAuthTab('register')">Criar Conta</button>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="login-email">E-mail</label>
+                    <input type="email" id="login-email" required placeholder="voce@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Senha</label>
+                    <input type="password" id="login-password" required placeholder="Sua senha">
+                </div>
+                <p class="form-error" id="login-error"></p>
+                <button type="submit" class="btn-primary btn-block">Acessar Conta</button>
+            </form>
+
+            <form id="register-form" style="display:none;" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="register-name">Nome Completo</label>
+                    <input type="text" id="register-name" required placeholder="Seu nome">
+                </div>
+                <div class="form-group">
+                    <label for="register-email">E-mail</label>
+                    <input type="email" id="register-email" required placeholder="voce@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Senha</label>
+                    <input type="password" id="register-password" required minlength="6" placeholder="Mínimo 6 caracteres">
+                </div>
+                <p class="form-error" id="register-error"></p>
+                <button type="submit" class="btn-primary btn-block">Criar Conta</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Painel do Usuário Completo -->
+    <div class="modal" id="account-panel" onclick="if(event.target===this)closeAccountPanel()">
+        <div class="modal-content account-modal-content dashboard-layout">
+            <span class="close-modal" onclick="closeAccountPanel()">&times;</span>
+            <aside class="dashboard-sidebar">
+                <div class="profile-summary">
+                    <div class="avatar-container">
+                        <img id="dashboard-avatar" src="https://placehold.co/100x100/eeeeee/111111?text=U" alt="Profile">
+                        <label for="avatar-upload" class="avatar-edit-btn" title="Alterar Foto"><i class="fa-solid fa-camera"></i></label>
+                        <input type="file" id="avatar-upload" hidden accept="image/*" onchange="handleAvatarUpload(event)">
+                    </div>
+                    <h3 id="dashboard-name">Usuário</h3>
+                    <p class="account-email" id="dashboard-email"></p>
+                </div>
+                <nav class="dashboard-nav">
+                    <button class="dash-btn active" id="btn-tab-profile" onclick="switchDashTab('profile')"><i class="fa-solid fa-id-card"></i> Meus Dados</button>
+                    <button class="dash-btn" id="btn-tab-addresses" onclick="switchDashTab('addresses')"><i class="fa-solid fa-location-dot"></i> Endereços</button>
+                    <button class="dash-btn" id="btn-tab-cards" onclick="switchDashTab('cards')"><i class="fa-solid fa-credit-card"></i> Cartões</button>
+                    <button class="dash-btn" id="btn-tab-orders" onclick="switchDashTab('orders')"><i class="fa-solid fa-box-open"></i> Compras</button>
+                </nav>
+            </aside>
+            <main class="dashboard-main">
+                <!-- Aba: Dados Pessoais -->
+                <div id="dash-profile" class="dash-section active">
+                    <h2>Dados Pessoais</h2>
+                    <form onsubmit="saveProfile(event)">
+                        <div class="form-group">
+                            <label>Nome Completo</label>
+                            <input type="text" id="prof-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefone</label>
+                            <input type="text" id="prof-phone" placeholder="(11) 99999-9999">
+                        </div>
+                        <button type="submit" class="btn-primary">Salvar Alterações</button>
+                    </form>
+                </div>
+
+                <!-- Aba: Endereços -->
+                <div id="dash-addresses" class="dash-section" style="display:none;">
+                    <h2>Meus Endereços</h2>
+                    <div id="address-list" class="cards-grid"></div>
+                    <h3 style="margin-top:24px;">Adicionar Novo Endereço</h3>
+                    <form onsubmit="saveAddress(event)" class="address-form">
+                        <div class="form-group">
+                            <label>CEP (Busca automática)</label>
+                            <input type="text" id="addr-cep" onblur="fetchCEP(this.value)" placeholder="00000-000" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Rua / Logradouro</label>
+                            <input type="text" id="addr-street" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>Número</label>
+                                <input type="text" id="addr-number" required>
+                            </div>
+                            <div class="form-group flex-2">
+                                <label>Complemento</label>
+                                <input type="text" id="addr-comp">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>Bairro</label>
+                                <input type="text" id="addr-neighborhood" required>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>Cidade / UF</label>
+                                <input type="text" id="addr-city" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Adicionar Endereço</button>
+                    </form>
+                </div>
+
+                <!-- Aba: Cartões -->
+                <div id="dash-cards" class="dash-section" style="display:none;">
+                    <h2>Meus Cartões</h2>
+                    <div id="card-list" class="cards-grid"></div>
+                    <h3 style="margin-top:24px;">Adicionar Novo Cartão</h3>
+                    <form onsubmit="savePaymentCard(event)">
+                        <div class="form-group">
+                            <label>Número do Cartão</label>
+                            <input type="text" id="card-num" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>Validade</label>
+                                <input type="text" id="card-exp" placeholder="MM/AA" maxlength="5" required>
+                            </div>
+                            <div class="form-group flex-2">
+                                <label>Nome Impresso no Cartão</label>
+                                <input type="text" id="card-name" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Adicionar Cartão</button>
+                    </form>
+                </div>
+
+                <!-- Aba: Compras -->
+                <div id="dash-orders" class="dash-section" style="display:none;">
+                    <h2>Minhas Compras</h2>
+                    <div id="account-orders"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Carrinho -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3>Sua Sacola</h3>
+            <span class="close-cart" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <p class="empty-cart-msg">Sua sacola está vazia.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total-price">R$ 0,00</span>
+            </div>
+            <button class="btn-primary btn-block" onclick="checkout()">Finalizar Compra</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <footer class="footer">
+        <p>&copy; 2026 AETERNA Global Outlet. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
