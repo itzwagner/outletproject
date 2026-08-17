@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AETERNA | Global Luxury Outlet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">AETERNA</div>
+        <nav class="nav-main">
+            <button class="nav-btn active" onclick="selectGender('men', this)">MEN</button>
+            <button class="nav-btn" onclick="selectGender('women', this)">WOMEN</button>
+        </nav>
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" placeholder="Search exclusive products..." oninput="handleSearch(event)">
+        </div>
+        <div class="user-actions">
+            <button class="icon-link" onclick="toggleWishlist()">
+                <i class="fa-regular fa-heart"></i>
+                <span class="wishlist-count" id="wishlist-count">0</span>
+            </button>
+            
+            <a href="#" class="icon-link" id="login-link" onclick="openAuthModal('login'); return false;">
+                <i class="fa-regular fa-user"></i> Login
+            </a>
+
+            <div class="user-menu" id="user-menu-wrap" style="display:none;">
+                <button class="user-menu-trigger" onclick="toggleAccountMenu()">
+                    <img src="https://ui-avatars.com/api/?name=User&background=000&color=fff" id="nav-avatar" class="nav-avatar" alt="Avatar">
+                    <span id="user-name">User</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <div class="account-dropdown" id="account-menu">
+                    <button onclick="openProfilePanel()"><i class="fa-regular fa-id-badge"></i> My Profile</button>
+                    <button onclick="openAccountPanel()"><i class="fa-solid fa-box"></i> My Orders</button>
+                    <button onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</button>
+                </div>
+            </div>
+            
+            <button class="cart-btn" onclick="toggleCart()">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span id="cart-count">0</span>
+            </button>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <span id="hero-subtitle">MENSWEAR COLLECTION</span>
+            <h1 id="hero-title">Exclusive Global Brands</h1>
+            <p>Premium imported selection with outlet pricing.</p>
+        </div>
+    </section>
+
+    <section class="subcategory-bar">
+        <div class="sub-container" id="category-nav"></div>
+    </section>
+
+    <section class="subcategory-bar subcategory-bar-secondary">
+        <div class="sub-container" id="sub-nav"></div>
+    </section>
+
+    <main class="main-container">
+        <div class="catalog-header">
+            <div>
+                <h2 id="catalog-title">All Products</h2>
+                <span class="product-count" id="product-count"></span>
+            </div>
+        </div>
+        <div class="products-transition-wrapper">
+            <div class="products-grid slide-in" id="products-grid"></div>
+        </div>
+    </main>
+
+    <div class="modal" id="product-modal" onclick="if(event.target===this)closeModal()">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="auth-modal" onclick="if(event.target===this)closeAuthModal()">
+        <div class="modal-content auth-modal-content">
+            <span class="close-modal" onclick="closeAuthModal()">&times;</span>
+            <h2 class="auth-title">Welcome to AETERNA</h2>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login" onclick="switchAuthTab('login')">Sign In</button>
+                <button class="auth-tab" data-tab="register" onclick="switchAuthTab('register')">Create Account</button>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" required placeholder="you@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required placeholder="Your password">
+                </div>
+                <p class="form-error" id="login-error"></p>
+                <button type="submit" class="btn-primary btn-block">Sign In</button>
+                <p class="demo-hint">Demo account: <strong>demo@aeterna.com</strong> / <strong>demo123</strong></p>
+            </form>
+
+            <form id="register-form" style="display:none;" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="register-name">Full Name</label>
+                    <input type="text" id="register-name" required placeholder="Your name">
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" required placeholder="you@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" required minlength="6" placeholder="Min. 6 characters">
+                </div>
+                <p class="form-error" id="register-error"></p>
+                <button type="submit" class="btn-primary btn-block">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="profile-modal" onclick="if(event.target===this)closeProfilePanel()">
+        <div class="modal-content profile-modal-content">
+            <span class="close-modal" onclick="closeProfilePanel()">&times;</span>
+            <h2 class="serif-title">My Profile</h2>
+            
+            <div class="profile-layout">
+                <div class="profile-sidebar">
+                    <div class="avatar-upload">
+                        <img src="https://ui-avatars.com/api/?name=User&background=000&color=fff&size=120" id="profile-avatar" alt="Avatar">
+                        <label for="avatar-input" class="avatar-edit-btn"><i class="fa-solid fa-camera"></i></label>
+                        <input type="file" id="avatar-input" accept="image/*" onchange="handleAvatarUpload(event)" style="display:none;">
+                    </div>
+                    <h3 id="profile-name-display">User Name</h3>
+                    <p id="profile-email-display">user@email.com</p>
+                </div>
+
+                <div class="profile-forms">
+                    <h3 class="section-subtitle">Shipping Address</h3>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>CEP / Zip Code</label>
+                            <input type="text" id="profile-cep" placeholder="00000-000" onblur="fetchAddressByCEP(this.value)">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Street Address</label>
+                        <input type="text" id="profile-street" placeholder="Street Name">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label>Neighborhood</label>
+                            <input type="text" id="profile-neighborhood" placeholder="Neighborhood">
+                        </div>
+                        <div class="form-group half">
+                            <label>City</label>
+                            <input type="text" id="profile-city" placeholder="City">
+                        </div>
+                    </div>
+                    
+                    <h3 class="section-subtitle" style="margin-top:24px;">Payment Methods</h3>
+                    <div class="saved-cards" id="saved-cards-container">
+                        <div class="credit-card-box">
+                            <i class="fa-brands fa-cc-visa"></i>
+                            <span>**** **** **** 4242</span>
+                        </div>
+                    </div>
+                    <button class="btn-outline" onclick="showToast('Add card feature simulated.')">+ Add New Card</button>
+
+                    <div style="margin-top: 30px; text-align: right;">
+                        <button class="btn-primary" onclick="saveProfileData()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="account-panel" onclick="if(event.target===this)closeAccountPanel()">
+        <div class="modal-content account-modal-content">
+            <span class="close-modal" onclick="closeAccountPanel()">&times;</span>
+            <h2 class="serif-title">Order History</h2>
+            <div id="account-orders"></div>
+        </div>
+    </div>
+
+    <div class="cart-sidebar" id="wishlist-sidebar">
+        <div class="cart-header">
+            <h3 class="serif-title">My Wishlist</h3>
+            <span class="close-cart" onclick="toggleWishlist()">&times;</span>
+        </div>
+        <div class="cart-items" id="wishlist-items">
+            <p class="empty-cart-msg">Your wishlist is empty.</p>
+        </div>
+    </div>
+
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3 class="serif-title">Shopping Bag</h3>
+            <span class="close-cart" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <p class="empty-cart-msg">Your bag is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total-price">$ 0.00</span>
+            </div>
+            <button class="btn-primary btn-block" onclick="checkout()">Checkout Securely</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <footer class="footer">
+        <div class="logo" style="margin-bottom: 16px; font-size: 18px;">AETERNA</div>
+        <p>&copy; 2026 AETERNA Global Outlet. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
