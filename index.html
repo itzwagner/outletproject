@@ -1,9 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AETERNA | Global Luxury Outlet</title>
+    <!-- SEO & Open Graph Meta Tags -->
+    <meta name="description" content="Discover exclusive global luxury brands with outlet pricing at AETERNA. Premium menswear and womenswear.">
+    <meta property="og:title" content="AETERNA | Global Luxury Outlet">
+    <meta property="og:description" content="Premium imported selection with outlet pricing.">
+    <meta property="og:type" content="website">
+    
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -63,10 +69,28 @@
     </section>
 
     <main class="main-container">
+        <!-- Breadcrumbs -->
+        <div class="breadcrumbs" id="breadcrumbs">Home > Men</div>
+
         <div class="catalog-header">
             <div>
                 <h2 id="catalog-title">All Products</h2>
                 <span class="product-count" id="product-count"></span>
+            </div>
+            <div class="catalog-controls">
+                <select id="sort-select" onchange="handleSort(this.value)">
+                    <option value="featured">Featured</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="name">Name: A-Z</option>
+                </select>
+                <select id="price-filter" onchange="handlePriceFilter(this.value)">
+                    <option value="all">All Prices</option>
+                    <option value="0-100">Under $100</option>
+                    <option value="100-250">$100 - $250</option>
+                    <option value="250-500">$250 - $500</option>
+                    <option value="500-up">$500 & Above</option>
+                </select>
             </div>
         </div>
         <div class="products-grid" id="products-grid"></div>
@@ -74,7 +98,7 @@
 
     <!-- Product Modal -->
     <div class="modal" id="product-modal" onclick="if(event.target===this)closeModal()">
-        <div class="modal-content">
+        <div class="modal-content modal-content-large">
             <span class="close-modal" onclick="closeModal()">&times;</span>
             <div class="modal-body" id="modal-body"></div>
         </div>
@@ -144,7 +168,7 @@
 
             <!-- Favorites Section -->
             <div id="acc-favorites" class="acc-section" style="display:none;">
-                <div class="products-grid" id="favorites-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));"></div>
+                <div class="products-grid" id="favorites-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));"></div>
             </div>
 
             <!-- Edit Profile & Settings Section -->
@@ -221,12 +245,63 @@
         <div class="cart-items" id="cart-items">
             <p class="empty-cart-msg">Your bag is empty.</p>
         </div>
+        <div class="cart-shipping-calc">
+            <label for="cart-cep-input"><i class="fa-solid fa-truck-fast"></i> Calculate Shipping (CEP)</label>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="cart-cep-input" placeholder="00000-000" maxlength="9" style="flex: 1; padding: 6px; border: 1px solid #ddd; border-radius: 4px;">
+                <button type="button" class="btn-secondary" onclick="calcCartShipping()" style="padding: 6px 12px; font-size: 12px;">Calculate</button>
+            </div>
+            <p id="shipping-result" style="font-size: 12px; margin-top: 5px; color: #666;"></p>
+        </div>
+        <div class="cart-coupon-box">
+            <input type="text" id="coupon-input" placeholder="Coupon code (e.g. AETERNA10)">
+            <button type="button" onclick="applyCoupon()">Apply</button>
+        </div>
         <div class="cart-footer">
-            <div class="cart-total">
+            <div class="cart-subtotal" style="font-size: 13px; color: #555; display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span>Subtotal:</span>
+                <span id="cart-subtotal-price">$ 0.00</span>
+            </div>
+            <div class="cart-discount" id="cart-discount-row" style="font-size: 13px; color: #27ae60; display: none; justify-content: space-between; margin-bottom: 5px;">
+                <span>Discount:</span>
+                <span id="cart-discount-price">-$ 0.00</span>
+            </div>
+            <div class="cart-shipping-cost" style="font-size: 13px; color: #555; display: flex; justify-content: space-between; margin-bottom: 5px;">
+                <span>Shipping:</span>
+                <span id="cart-shipping-price">$ 0.00</span>
+            </div>
+            <div class="cart-total" style="border-top: 1px solid #eee; padding-top: 8px; margin-top: 5px;">
                 <span>Total:</span>
                 <span id="cart-total-price">$ 0.00</span>
             </div>
-            <button class="btn-primary btn-block" onclick="checkout()">Checkout</button>
+            <button class="btn-primary btn-block" onclick="startCheckoutModal()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal" id="checkout-modal" onclick="if(event.target===this)closeCheckoutModal()">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-modal" onclick="closeCheckoutModal()">&times;</span>
+            <h2>Select Payment Method</h2>
+            <div class="checkout-methods" style="margin: 20px 0; display: flex; flex-direction: column; gap: 12px;">
+                <label style="display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer;">
+                    <input type="radio" name="pay-method" value="pix" checked>
+                    <i class="fa-solid fa-qrcode fa-lg" style="color: #27ae60;"></i>
+                    <div><strong>PIX</strong> <br><small style="color: #666;">Instant approval & 5% extra discount</small></div>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer;">
+                    <input type="radio" name="pay-method" value="card">
+                    <i class="fa-regular fa-credit-card fa-lg" style="color: #2980b9;"></i>
+                    <div><strong>Credit Card</strong> <br><small style="color: #666;">Pay in up to 3x interest-free</small></div>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer;">
+                    <input type="radio" name="pay-method" value="boleto">
+                    <i class="fa-solid fa-barcode fa-lg" style="color: #e67e22;"></i>
+                    <div><strong>Boleto Bancário</strong> <br><small style="color: #666;">Due in 2 business days</small></div>
+                </label>
+            </div>
+            <div id="payment-extra-content" style="margin-bottom: 20px;"></div>
+            <button class="btn-primary btn-block" onclick="finalizeCheckoutOrder()">Confirm Order</button>
         </div>
     </div>
 
